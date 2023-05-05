@@ -63,6 +63,8 @@ function hideModal() {
   let resetForm = document.getElementById("formModal");
   resetForm.reset();
 
+  history.go(0);
+
 }
 
 let spanClose = document.querySelector(".close");
@@ -78,6 +80,7 @@ btnClose.addEventListener("click", (e) => {
   let target = e.target;
   if (target === btnClose) {
     hideModal();
+    let resetForm = document.getElementById("formModal");
   }
 }); 
 
