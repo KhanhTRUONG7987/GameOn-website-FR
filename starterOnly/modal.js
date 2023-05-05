@@ -34,18 +34,16 @@ function hideModal() {
 
   formElement.classList.remove("hidden");
 
-
   let deletesuccessMessage = document.querySelector(".success_text");
-  if(deletesuccessMessage){
+  if (deletesuccessMessage) {
     deletesuccessMessage.remove();
-  }  
+  }
 
   let btnClose = document.querySelector(".btn-close");
-  if(btnClose) {
+  if (btnClose) {
     btnClose.remove();
   }
 
-  
   // let allInputs = document.querySelectorAll("input:not(input[type=submit])");
   // allInputs.forEach((singleInput) => (singleInput.value = ""));
 
@@ -64,7 +62,6 @@ function hideModal() {
   resetForm.reset();
 
   history.go(0);
-
 }
 
 let spanClose = document.querySelector(".close");
@@ -82,7 +79,7 @@ btnClose.addEventListener("click", (e) => {
     hideModal();
     let resetForm = document.getElementById("formModal");
   }
-}); 
+});
 
 // ##################################################################################################
 // ##################################################################################################
@@ -102,6 +99,111 @@ btnClose.addEventListener("click", (e) => {
 // (5) Un bouton radio est sélectionné.
 // (6) La case des conditions générales est cochée, l'autre case est facultative / peut être laissée décochée.
 // Conserver les données du formulaire (ne pas effacer le formulaire) lorsqu'il ne passe pas la validation.
+
+let validatorRules = {
+  firstRequired: function (value) {
+    // const intermediate = value === undefined;
+    // console.log('intermediate :>> ', intermediate);
+    return value ? undefined : `Veuillez entrer un prénom`;
+  },
+  lastRequired: function (value) {
+    return value ? undefined : `Veuillez entrer un nom`;
+  },
+  emailRequired: function (value) {
+    return value ? undefined : `Veuillez entrer une adresse email`;
+  },
+  email: function (value) {
+    let regex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    return regex.test(value) ? undefined : `Veuillez entrer une adresse email!`;
+  },
+  // eg: min: 2 => need to push 2 into the value? => nested function
+  min: function (min) {
+    return function (value) {
+      return value.length >= min
+        ? undefined
+        : `Veuillez entrer au moins ${min} caractères`;
+    };
+  },
+  /** max: function (max) {
+    //eg: min: 2 => need to push 2 into the value? => nested function 
+    return function (value) {
+      return value.length <= max ? undefined : "Veuillez entrer au maximum ${max} caractères";
+    }
+  }, */
+  numberRequired: function (value) {
+    return value ? undefined : `Veuillez indiquer une valeur`;
+  },
+  integerNumber: function (value) {
+    let regex = /^(\d?[1-9]|[1-9]0)$/;
+    return regex.test(value)
+      ? undefined
+      : `Veuillez indiquer un nombre entier entre 0 et 99`;
+  },
+
+  birthdayRequired: function (value) {
+    return value ? undefined : `Veuillez indiquer une date de naissance`;
+  },
+
+  birthday: function (value) {
+    value = new Date(value);
+    let currentDate = new Date();
+    return value < currentDate
+      ? undefined
+      : `Veuillez indiquer une date de naissance valide`;
+  },
+
+  checkedRequired: function (value = false) {
+    // console.log('errorMessage sent from condition l519 for else:>> ', errorMessage);
+    // const errorMessageNotEmpty = errorMessage.length > 0 ;
+    // console.log('errorMessageNotEmpty :>> ', errorMessageNotEmpty);
+    //console.log("test value of checked box :>> ", value);
+    let checkedBox = document.querySelector(`input[name="cgu"]:checked`); // `!! ici => problem!` => solved!
+    //console.log("value returned of checkedBox :>> ", checkedBox);
+    value == checkedBox;
+    return value
+      ? undefined
+      : `Vous devez verifier que vous acceptez les termes et conditions`;
+  },
+
+  checkedOptional: function (value = false) {
+    //console.log("test value of checked box :>> ", value);
+    let checkedBox = document.querySelector(`input[name="membership"]:checked`); // `!! ici => problem!` => solved!
+    //console.log("value returned of checkedBox :>> ", checkedBox);
+    value == checkedBox;
+    return value ? undefined : "";
+    //Utilisateur ne veux pas être membre
+  },
+
+  radio: function (value) {
+    //? Avec le coallessing
+    let checkedRadio = document.querySelector(
+      'input[name="location"]:checked'
+    )?.value;
+
+    // let checkedRadio = document.querySelector(
+    //   'input[name="location"]:checked'
+    // ).value;
+
+    console.log("checkedRadio :>> ", checkedRadio);
+    // console.log(checkedRadio);
+    // debugger;
+    value == checkedRadio;
+
+    console.log("value :>> ", value);
+    // console.log(content);
+    // debugger;
+    // if(checkedRadio === null) return `Veuillez selectionner une ville`;
+    // const valueData = value && value !== undefined;
+
+    // console.log('valueData :>> ', valueData);
+
+    return value ? undefined : `Veuillez selectionner une ville`;
+
+    // console.log(content);
+    // debugger;
+  },
+};
 
 function Validator(formSelector) {
   // console.log('formSelector :>> ', formSelector);
@@ -158,99 +260,7 @@ function Validator(formSelector) {
    * - err -> return `error message`,
    * - no err -> return `undefined`,
    */
-
-  let validatorRules = {
-    firstRequired: function (value) {
-      return value ? undefined : `Veuillez entrer un prénom`;
-    },
-    lastRequired: function (value) {
-      return value ? undefined : `Veuillez entrer un nom`;
-    },
-    emailRequired: function (value) {
-      return value ? undefined : `Veuillez entrer une adresse email`;
-    },
-    email: function (value) {
-      let regex =
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-      return regex.test(value)
-        ? undefined
-        : `Veuillez entrer une adresse email!`;
-    },
-    // eg: min: 2 => need to push 2 into the value? => nested function
-    min: function (min) {
-      return function (value) {
-        return value.length >= min
-          ? undefined
-          : `Veuillez entrer au moins ${min} caractères`;
-      };
-    },
-    /** max: function (max) {
-      //eg: min: 2 => need to push 2 into the value? => nested function 
-      return function (value) {
-        return value.length <= max ? undefined : "Veuillez entrer au maximum ${max} caractères";
-      }
-    }, */
-    numberRequired: function (value) {
-      return value ? undefined : `Veuillez indiquer une valeur`;
-    },
-    integerNumber: function (value) {
-      let regex = /^(\d?[1-9]|[1-9]0)$/;
-      return regex.test(value)
-        ? undefined
-        : `Veuillez indiquer un nombre entier entre 0 et 99`;
-    },
-
-    birthdayRequired: function (value) {
-      return value ? undefined : `Veuillez indiquer une date de naissance`;
-    },
-
-    birthday: function (value) {
-      value = new Date(value);
-      let currentDate = new Date();
-      return value < currentDate
-        ? undefined
-        : `Veuillez indiquer une date de naissance valide`;
-    },
-
-    checkedRequired: function (value = false) {
-      // console.log('errorMessage sent from condition l519 for else:>> ', errorMessage);
-      // const errorMessageNotEmpty = errorMessage.length > 0 ;
-      // console.log('errorMessageNotEmpty :>> ', errorMessageNotEmpty);
-      //console.log("test value of checked box :>> ", value);
-      let checkedBox = document.querySelector(`input[name="cgu"]:checked`); // `!! ici => problem!` => solved!
-      //console.log("value returned of checkedBox :>> ", checkedBox);
-      value == checkedBox;
-      return value
-        ? undefined
-        : `Vous devez verifier que vous acceptez les termes et conditions`;
-    },
-
-    checkedOptional: function (value = false) {
-      //console.log("test value of checked box :>> ", value);
-      let checkedBox = document.querySelector(
-        `input[name="membership"]:checked`
-      ); // `!! ici => problem!` => solved!
-      //console.log("value returned of checkedBox :>> ", checkedBox);
-      value == checkedBox;
-      return value ? undefined : ""; 
-      //Utilisateur ne veux pas être membre
-    },
-
-    radio: function (value) {
-      let checkedRadio = document.querySelector(
-        'input[name="location"]:checked'
-      ).value;
-      // console.log(checkedRadio);
-      // debugger;
-      value == checkedRadio;
-      // console.log(content);
-      // debugger;
-      return value ? undefined : `Veuillez selectionner une ville`;
-
-      // console.log(content);
-      // debugger;
-    },
-  };
+  //? Mooved above validatorRules
 
   /**
    * (2.3) => steps to get to (1.2) then (1.1)
@@ -316,6 +326,11 @@ function Validator(formSelector) {
       // (!!) => do now: listen events to validate thanks to inputs retrieved above:
 
       // events:
+      // const submitButton = document.querySelector('input[type="submit"]');
+      // console.log(submitButton);
+      // submitButton.onclick = handleValidate;
+      // debugger
+      // input.onclick = handleValidate;
       input.onblur = handleValidate;
       input.onchange = handleValidate;
       input.oninput = handleClearErrors;
@@ -334,10 +349,11 @@ function Validator(formSelector) {
 
       // : each rule above reveives value!
       let rules = formRules[event.target.name];
+      console.log("rules :>> ", rules);
       let errorMessage;
 
       for (let rule of rules) {
-        if (event.target.type === "checkbox") {
+        if (event.target.type === "checkbox" || event.target.type === "radio") {
           errorMessage = rule(event.target.checked);
         } else {
           errorMessage = rule(event.target.value);
@@ -397,32 +413,53 @@ function Validator(formSelector) {
   //(3): handle submit event:
   formElement.onsubmit = function (event) {
     event.preventDefault();
-    console.log("_this.onSubmit :>> ", typeof _this.onSubmit);
+    //console.log("_this.onSubmit :>> ", typeof _this.onSubmit);
     //console.log(_this);
     //this.onSubmit();
     //console.log(this.onSubmit);
-    let errorMessages = [];
+    //let errorMessages = [];
     //return;
     let inputs = formElement.querySelectorAll("[name][data-rules]");
-    let isValid = true;
+    let isValid = false;
 
     //I would like to get the value of the radio button selected
 
     // /solution 2: Delete all the radio inputs found in inputs and replace them with the selected radio button
+    const inputFirstname = document.querySelector("input[name='first']").value;
+    //console.log('inputFirstname :>> ', inputFirstname);
+    const inputLastname = document.querySelector("input[name='last']").value;
+    const inputBirthdate = document.querySelector(
+      "input[name='birthdate']"
+    ).value;
+    const inputQuantity = document.querySelector(
+      "input[name='quantity']"
+    ).value;
+    const inputEmail = document.querySelector("input[name='email']").value;
 
     for (let input of inputs) {
       //? perform the check ONLY on the selected radio button, and ignore the others
 
       //? 1. Identify the selected radio button
       //const radioButtonSelectedLocation = document.querySelector('input[name="location"]:checked');
-      const radioButtonSelectedLocation =
-        input.type === "radio" && input.checked;
+      const radioButtonSelectedLocation = document.querySelector(
+        "input[name='location']:checked"
+      );
+      //console.log('radioButtonSelectedLocation :>> ', radioButtonSelectedLocation);
       //check if input type checkbox has an attribute "checked"
 
       const checkedCheckbox = input.type === "checkbox" && input.checked;
 
       //? 2. if The radio button is not the selected one, we didn't make the verification
-      if (radioButtonSelectedLocation && checkedCheckbox) {
+      if (
+        radioButtonSelectedLocation &&
+        checkedCheckbox &&
+        inputBirthdate &&
+        inputQuantity &&
+        inputEmail &&
+        inputFirstname &&
+        inputLastname
+      ) {
+        //debugger;
         if (handleValidate({ target: input })) {
           isValid = true;
         }
@@ -435,7 +472,9 @@ function Validator(formSelector) {
     // console.log(isValid);
     // submit => when form is valid === true
     // console.log('isValid :>> ', isValid);
+
     if (isValid) {
+      debugger;
       // console.log('isValid, je suis là :>> ', isValid);
 
       let enableInputs = formElement.querySelectorAll("[name]");
@@ -451,10 +490,18 @@ function Validator(formSelector) {
         //   console.log("input received is of type: radio", input);
         switch (input.type) {
           case "radio":
-            values[input.name] = document.querySelector(
-              `input[name="location"]:checked`
-            ).value;
-            //console.log("inputValue", inputValue);
+            if (
+              input.matches(":checked") &&
+              !input.name === "location" &&
+              inputs.type === "radio"
+            ) {
+              return validatorRules;
+            } else {
+              values[input.name] = document.querySelector(
+                `input[name="location"]:checked`
+              ).value;
+              //console.log("inputValue", inputValue);
+            }
 
             break;
 
@@ -483,26 +530,51 @@ function Validator(formSelector) {
           default:
             // console.log("input");
             values[input.name] = input.value;
+            console.log("values[input.name] :>> ", values[input.name]);
         }
 
         return values;
       },
       {});
-
+      debugger;
       // console.log('formValues :>> ', formValues);
       // callback onSubmit() & return values of inputs of form...
+      // const radioButtonSelected = document.querySelector("input[name='location']:checked").value;
+      // const checkedCheckb = document.querySelector("input[name='cgu']:checked").value;
+
       if (formValues.cgu) {
         //console.log("Condition des cgu existe");
-        _this.onSubmit(formValues); 
+        _this.onSubmit(formValues);
         //visibility form content hidden
         formElement.classList.add("hidden");
         setTimeout(buttonCLose.classList.add("show"), 1000);
         setTimeout(successMessage.classList.add("show"), 1000);
-      } 
+      }
+    } else {
+      validatorRules.firstRequired();
+      validatorRules.lastRequired();
+      validatorRules.emailRequired();
+      validatorRules.email();
+      validatorRules.min();
+      validatorRules.numberRequired();
+      validatorRules.integerNumber();
+      validatorRules.birthdayRequired();
+      validatorRules.birthday();
+      validatorRules.checkedRequired();
+      validatorRules.checkedOptional();
+      validatorRules.radio();
+      // I want to map on each  function stored in validatorRules and execute them, but its an object
+
+      // const validatorRulesArray = Object.entries(validatorRules);
+      // validatorRulesArray.forEach( validator => {
+      //     console.log('je passe ici');
+      //   const unicValidatorFunction = validator[1];
+      //   unicValidatorFunction();
+
+      // });
     }
   };
+  // formValues.cgu && formValues.first && formValues.last && formValues.email && formValues.birthday && formValues.quantity && formValues.location
 
   // ##################################################################################################
 }
-
-//?
