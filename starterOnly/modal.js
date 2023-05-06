@@ -142,15 +142,14 @@ function Validator(formSelector) {
         : `Veuillez indiquer une date de naissance valide`;
     },
 
-    checkedRequired: function (value = false) {
+    checkedRequired: function () {
       let checkedBox = document.querySelector(`input[name="cgu"]:checked`);
       return (checkedBox ? undefined : `Vous devez verifier que vous acceptez les termes et conditions`);
     },
 
-    checkedOptional: function (value = false) {
+    checkedOptional: function () {
       let checkedBox = document.querySelector(`input[name="membership"]:checked`);
-      value == checkedBox;
-      return value ? undefined : "";
+      return checkedBox ? undefined : "";
       //Utilisateur ne veux pas être membre
     },
 
@@ -197,7 +196,9 @@ function Validator(formSelector) {
 
       input.onblur = handleValidate;
       input.onchange = handleValidate;
+      if(input.name !== "membership") {
       input.oninput = handleClearErrors;
+      }
     }
 
     function handleValidate(event) {
@@ -230,12 +231,8 @@ function Validator(formSelector) {
       }
       return !errorMessage;
     }
-
     function handleClearErrors(event) {
       // get formData firstly => to check if formData has class `invalid` => clear if true
-      let inputs = formElement.querySelectorAll("[name]");
-      for (let input of inputs) {
-      if (!(input.type === "checkbox" && input.name !== "membership")) {
       let formData = getParent(event.target, ".formData");
       if (formData.classList.contains("invalid")) {
         formData.classList.remove("invalid");
@@ -247,7 +244,6 @@ function Validator(formSelector) {
         }
       }
     }
-  }
   }
 
   // ISSUE #4: Ajouter confirmation quand envoi réussi
@@ -350,5 +346,4 @@ function Validator(formSelector) {
       }
     }
   };
-}
 }
