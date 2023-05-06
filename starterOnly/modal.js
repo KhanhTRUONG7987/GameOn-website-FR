@@ -15,8 +15,6 @@ const successMessage = document.querySelector(".content .success_text");
 const buttonCLose = document.querySelector(".content .btn-close");
 const formElement = document.getElementById("formModal");
 
-// ########################################################################################################################
-
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 
@@ -74,9 +72,8 @@ btnClose.addEventListener("click", (e) => {
     hideModal();
     //let resetForm = document.getElementById("formModal");
   }
-})
+});
 
-// ########################################################################################################################
 // ISSUE #2: Implémenter entrées du formulaire ()
 
 function Validator(formSelector) {
@@ -92,7 +89,6 @@ function Validator(formSelector) {
   }
 
   // ISSUE #3: Ajouter validation ou messages d'erreur
-
   const validatorRules = {
     firstRequired: function (value) {
       // const intermediate = value === undefined;
@@ -133,11 +129,11 @@ function Validator(formSelector) {
         ? undefined
         : `Veuillez indiquer un nombre entier entre 0 et 99`;
     },
-  
+
     birthdayRequired: function (value) {
       return value ? undefined : `Veuillez indiquer une date de naissance`;
     },
-  
+
     birthday: function (value) {
       value = new Date(value);
       let currentDate = new Date();
@@ -145,34 +141,26 @@ function Validator(formSelector) {
         ? undefined
         : `Veuillez indiquer une date de naissance valide`;
     },
-  
+
     checkedRequired: function (value = false) {
       let checkedBox = document.querySelector(`input[name="cgu"]:checked`);
-      value == checkedBox;
-      return value
-        ? undefined
-        : `Vous devez verifier que vous acceptez les termes et conditions`;
+      return (checkedBox ? undefined : `Vous devez verifier que vous acceptez les termes et conditions`);
     },
-  
+
     checkedOptional: function (value = false) {
       let checkedBox = document.querySelector(`input[name="membership"]:checked`);
       value == checkedBox;
       return value ? undefined : "";
       //Utilisateur ne veux pas être membre
     },
-  
-    radio: function (value) {
+
+    radio: function () {
       //? Avec nullish coalescing operator ?? ou Optional chanining ?
       let checkedRadio = document.querySelector(
         'input[name="location"]:checked'
       )?.value;
-  
-      console.log("checkedRadio :>> ", checkedRadio);
-      value === checkedRadio;
-  
-      console.log("value :>> ", value);
-  
-      return value ? undefined : `Veuillez selectionner une ville`;
+
+      return checkedRadio ? undefined : `Veuillez selectionner une ville`;
     },
   };
 
@@ -244,6 +232,9 @@ function Validator(formSelector) {
     }
     function handleClearErrors(event) {
       // get formData firstly => to check if formData has class `invalid` => clear if true
+      let inputs = formElement.querySelectorAll("[name][data-rules]");
+    for (let input of inputs) {
+      if (!input.type === "checkbox") {
       let formData = getParent(event.target, ".formData");
       if (formData.classList.contains("invalid")) {
         formData.classList.remove("invalid");
@@ -256,17 +247,17 @@ function Validator(formSelector) {
       }
     }
   }
-
-  // ########################################################################################################################
+  }
 
   // ISSUE #4: Ajouter confirmation quand envoi réussi
 
   //(3): handle submit event:
   formElement.onsubmit = function (event) {
     event.preventDefault();
+
     let inputs = formElement.querySelectorAll("[name][data-rules]");
     let isValid = false;
-    
+
     const inputFirstname = document.querySelector("input[name='first']").value;
     const inputLastname = document.querySelector("input[name='last']").value;
     const inputBirthdate = document.querySelector(
@@ -344,7 +335,7 @@ function Validator(formSelector) {
 
           return values;
         },
-        {});
+          {});
 
         if (formValues.cgu) {
           _this.onSubmit(formValues);
@@ -354,29 +345,9 @@ function Validator(formSelector) {
           setTimeout(successMessage.classList.add("show"), 1000);
         }
       } else {
-        validatorRules.firstRequired();
-        validatorRules.lastRequired();
-        validatorRules.emailRequired();
-        // validatorRules.email();
-        // validatorRules.min();
-        validatorRules.numberRequired();
-        // validatorRules.integerNumber();
-        validatorRules.birthdayRequired();
-        // validatorRules.birthday();
-        validatorRules.checkedRequired();
-        // validatorRules.checkedOptional();
-        // validatorRules.radioRequired();
-        validatorRules.radio();
-        // I want to map on each  function stored in validatorRules and execute them, but its an object
-
-        // const validatorRulesArray = Object.entries(validatorRules);
-        // validatorRulesArray.forEach( validator => {
-        //     console.log('je passe ici');
-        //   const unicValidatorFunction = validator[1];
-        //   unicValidatorFunction();
-
-        // });
+        Array.from(inputs).map((input) => handleValidate({ target: input }))
       }
     }
   };
+}
 }
