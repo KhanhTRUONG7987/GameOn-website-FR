@@ -182,7 +182,7 @@ function Validator(formSelector) {
     for (let input of inputs) {
       let rules = input.getAttribute("data-rules").split("|");
       for (let rule of rules) {
-        let ruleArray; // '!!!'
+        let ruleArray;
         let isRuleHasValue = rule.includes(":");
 
         // check min: 2 with `includes`or `indexOf`:
@@ -195,7 +195,6 @@ function Validator(formSelector) {
         if (isRuleHasValue) {
           ruleFunc = ruleFunc(ruleArray[1]);
         }
-
         if (Array.isArray(formRules[input.name])) {
           // since 2nd run of for => push rules into the array
           formRules[input.name].push(ruleFunc);
@@ -239,7 +238,6 @@ function Validator(formSelector) {
       }
       return !errorMessage;
     }
-
     function handleClearErrors(event) {
       // get formData firstly => to check if formData has class `invalid` => clear if true
       let formData = getParent(event.target, ".formData");
@@ -262,12 +260,8 @@ function Validator(formSelector) {
     event.preventDefault();
     let inputs = formElement.querySelectorAll("[name][data-rules]");
     let isValid = false;
-
-    //I would like to get the value of the radio button selected
-
-    // /solution 2: Delete all the radio inputs found in inputs and replace them with the selected radio button
+    
     const inputFirstname = document.querySelector("input[name='first']").value;
-    //console.log('inputFirstname :>> ', inputFirstname);
     const inputLastname = document.querySelector("input[name='last']").value;
     const inputBirthdate = document.querySelector(
       "input[name='birthdate']"
@@ -278,17 +272,10 @@ function Validator(formSelector) {
     const inputEmail = document.querySelector("input[name='email']").value;
 
     for (let input of inputs) {
-      //? perform the check ONLY on the selected radio button, and ignore the others
-
-      //? 1. Identify the selected radio button
-
       const radioButtonSelectedLocation = document.querySelector(
         "input[name='location']:checked"
       );
-
       const checkedCheckbox = input.type === "checkbox" && input.checked;
-
-      //? 2. if The radio button is not the selected one, we didn't make the verification
       if (
         radioButtonSelectedLocation &&
         checkedCheckbox &&
@@ -298,17 +285,14 @@ function Validator(formSelector) {
         inputFirstname &&
         inputLastname
       ) {
-        //debugger;
         if (handleValidate({ target: input })) {
           isValid = true;
         }
-        //? Realise the verification only on the selected radio button and ignore the others ones
       }
 
       if (isValid) {
         let enableInputs = formElement.querySelectorAll("[name]");
         //?  0. expectation: if we use onSubmit => the function onSubmit added in index.js will return: inputs (selectors.target)- [name] of the inputs : value of the inputs
-        //   1. if input is entered =>
         let formValues = Array.from(enableInputs).reduce(function (
           values,
           input
@@ -325,16 +309,12 @@ function Validator(formSelector) {
                 values[input.name] = document.querySelector(
                   `input[name="location"]:checked`
                 ).value;
-                //console.log("inputValue", inputValue);
               }
-
               break;
 
             case "checkbox":
               if (!input.matches(":checked") && !input.name === "membership") {
-                //console.log('input.name invalide :>> ', input.name);
                 if (input.matches(":checked") && input.name === "membership") {
-                  //console.log('Normally here membership not cgu :>> ', input.name);
                   values[input.name] = "";
                 }
                 return validatorRules;
@@ -349,11 +329,9 @@ function Validator(formSelector) {
                   `input[name="membership"]:checked`
                 ).value;
               }
-
               break;
 
             default:
-              // console.log("input");
               values[input.name] = input.value;
               console.log("values[input.name] :>> ", values[input.name]);
           }
@@ -363,7 +341,6 @@ function Validator(formSelector) {
         {});
 
         if (formValues.cgu) {
-          //console.log("Condition des cgu existe");
           _this.onSubmit(formValues);
           //visibility form content hidden
           formElement.classList.add("hidden");
