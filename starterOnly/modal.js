@@ -230,11 +230,12 @@ function Validator(formSelector) {
       }
       return !errorMessage;
     }
+
     function handleClearErrors(event) {
       // get formData firstly => to check if formData has class `invalid` => clear if true
-      let inputs = formElement.querySelectorAll("[name][data-rules]");
-    for (let input of inputs) {
-      if (!input.type === "checkbox") {
+      let inputs = formElement.querySelectorAll("[name]");
+      for (let input of inputs) {
+      if (!(input.type === "checkbox" && input.name !== "membership")) {
       let formData = getParent(event.target, ".formData");
       if (formData.classList.contains("invalid")) {
         formData.classList.remove("invalid");
